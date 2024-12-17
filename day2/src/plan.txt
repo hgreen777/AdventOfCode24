@@ -1,0 +1,3 @@
+
+1. Global Variables for safe_reports.
+2. Process each line at a time. 
