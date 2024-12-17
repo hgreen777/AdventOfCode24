@@ -1,0 +1,37 @@
+
+1. Process Data. 
+
+2. Sort Data.
+
+3. Work out differences in pairs.
+
+4. Calculate Sum.
+
+[5.] Ensure diagnostic view and output final value. 
+
+-> [with given input data set the no. of iterations.]
+Option 1 -> 1000000:
+- Use bubble sort. 
+- With each iteration and each added sorted element, compute difference and add to sum. 
+
+Option 2 -> 7000:
+- Use merge sort. -> heap sort due to space complexity O(1)
+- Sort both lists 
+- Traverse through computing difference and summing. 
+
+
+Function to calculate the difference and add to total.
+* dif needs to be i32
+arr1
+arr2
+total
+
+function computeDifference(i : int) {
+    
+    # Compute absolute difference 
+    diff = arr[1] - arr[2]
+    if diff < 0:
+        diff *= -1
+
+    total += diff
+}
