@@ -35,3 +35,9 @@ function computeDifference(i : int) {
 
     total += diff
 }
+
+Part 2:
+1. Process Data.
+1b. Sort list 2.
+2. Generate (,) for unique keys and count -> will be ordered.
+3. Traverse first list and calulate similarity score for each item in the second list -> search usign binary search..

@@ -1,40 +1,86 @@
 // Day 1 -> Advent of Code 2024.
-// Program Returns: 1320851
+
+// Program [part one] Returns: 1320851
 // 7000 operations (2(1000log1000) + 1000) -> O(2(nlogn) + n)
 // Heap Sort then linear traverse.
 
+// Program [part two] Returns: 26859182
+// 2(nlog2(n)) -> 20000 operations for given input
+// 2 linear traversals with binary search for each iteration.
 
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
 
 const FILE: &str = r"E:\Programming\AdventOfCode24\day1\src\input.txt";
-
 const ARR_ELEMENTS : usize = 1000;
 
 
-// File Operations. 
-
 fn main() {
-    let mut total : u32 = 0;
-    let mut arr1: [u32; ARR_ELEMENTS] = [0; ARR_ELEMENTS];
-    let mut arr2: [u32; ARR_ELEMENTS] = [0; ARR_ELEMENTS];
+    fn partOne() {
+        let mut total : u32 = 0;
+        let mut arr1: [u32; ARR_ELEMENTS] = [0; ARR_ELEMENTS];
+        let mut arr2: [u32; ARR_ELEMENTS] = [0; ARR_ELEMENTS];
 
-    // Read Data from file
-    if let Err(e) = loadData(FILE, &mut arr1, &mut arr2) {
-        eprintln!("Error loading data: {}", e);
+        // Read Data from file
+        if let Err(e) = loadData(FILE, &mut arr1, &mut arr2) {
+            eprintln!("Error loading data: {}", e);
+        }
+
+        // Sort the data
+        heapSort(&mut arr1);
+        heapSort(&mut arr2);
+        //println!("{:?}",arr2);
+
+        // Compute the difference
+        for i in 0..ARR_ELEMENTS {
+            computeDifference(&mut total,&mut arr1[i],&mut arr2[i]);
+        }
+
+        println!("{}", total);
     }
 
-    // Sort the data
-    heapSort(&mut arr1);
-    heapSort(&mut arr2);
-    //println!("{:?}",arr2);
+    fn partTwo() {
+        let mut arr1: [u32; ARR_ELEMENTS] = [0; ARR_ELEMENTS];
+        let mut arr2: [u32; ARR_ELEMENTS] = [0; ARR_ELEMENTS];
+        loadData(FILE, &mut arr1, &mut arr2);
+        heapSort(&mut arr2);
 
-    // Compute the difference
-    for i in 0..ARR_ELEMENTS {
-        computeDifference(&mut total,&mut arr1[i],&mut arr2[i]);
+        // Generate unique 
+        let mut unique: Vec<[u32; 2]> = Vec::new();
+
+        for i in 0..ARR_ELEMENTS {
+            if binarySearch(&mut unique, arr2[i]) == -1 {
+                // add to unique
+                unique.push([arr2[i], 1]);
+            } else {
+                // Add 1 to the count in unique
+                for entry in unique.iter_mut() {
+                    if entry[0] == arr2[i] {
+                        entry[1] += 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        //println!("{:?}",unique);
+        //println!("{}",unique.len());
+
+        // Traverse array 1 adding each similarity score to the total
+        let mut total = 0;
+
+        for i in 0..ARR_ELEMENTS {
+            let result = binarySearch(&mut unique, arr1[i]);
+            if result != -1 {
+                let result = result as usize;
+                total += unique[result][0] * unique[result][1];
+            }
+        }
+
+        println!("{}",total);
     }
 
-    println!("{}", total);
+    partTwo()
 }
 
 
@@ -107,3 +153,27 @@ fn computeDifference(total : &mut u32,
     }
 
 }
+
+fn binarySearch(arr : &mut Vec<[u32; 2]>, x : u32) -> i16{
+    if arr.is_empty() {
+        println!("Array Empty.");
+        return -1;
+    }
+
+    let mut lower: isize = 0;
+    let mut upper: isize = (arr.len() - 1) as isize;
+
+    while lower <= upper {
+        let mid = (lower + upper) / 2;
+        if arr[mid as usize][0] == x {
+            return mid as i16;
+        } else if arr[mid as usize][0] > x {
+            upper = mid - 1;
+        } else {
+            lower = mid + 1;
+        }
+    }
+    return -1;
+}
+
+
