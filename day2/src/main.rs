@@ -38,7 +38,10 @@ fn load_data(file_location: &str, total_safe : &mut u32) -> io::Result<()> {
                 arr.push(num.parse::<u32>().unwrap_or(0));
                 //println!("{:?}",arr);
                 // Compute if safe 
-                if is_safe(&mut arr) {
+                if arr.len() <= 4 {
+                    println!("{:?}", arr);
+                }
+                if is_safe(&arr) {
                     *total_safe += 1;
                 }
                 
@@ -49,30 +52,55 @@ fn load_data(file_location: &str, total_safe : &mut u32) -> io::Result<()> {
     Ok(())
 }
 
-fn is_safe(arr : &mut Vec<u32>) -> bool {
-    // Need to ensure it stays decreasing or increasing 
-    let mut is_increasing:bool = false;
-    for i in 0..arr.len() - 1 {
-        let diff:i16 = arr[i] as i16 - arr[i+1] as i16;
-        if i == 0 {
-            if diff < 0 {
-                is_increasing = false;
-            } else {
-                is_increasing = true;
+fn is_safe(arr: &[u32]) -> bool {
+    // NO IMPLEMENTATION WORKS 
+    // Should show 413 as correct.
+    // Actual outptu shows 412 to be correct.
+    // THERE ARE NO SYNTAX ERRORS.
+
+    let mut is_increasing: bool = arr[1] as i16 - arr[0] as i16 > 0;
+    let mut ignore_index : i16 = -1;
+    let mut i : usize = 0;
+    let mut safe : bool;
+    let mut diff : i32;
+
+    while i < arr.len() - 1 {
+        if ignore_index != -1 {
+            if i == ignore_index as usize {
+                i += 1;
+                continue;
             }
         }
 
-        //print!("{},",diff);
-        if diff < 0 {
-            if diff < -3 || is_increasing {
-                return false; 
-            }
-
+        if is_increasing {
+            diff = arr[i + 1] as i32 - arr[i] as i32;
+            
         } else {
-            if diff > 3 || diff < 1 || !is_increasing{
-                return false;
-            }
+            diff = arr[i] as i32 - arr[i + 1] as i32;
         }
+        safe = 1 <= diff && diff <= 3;
+
+        if !safe {
+            if ignore_index != -1 {
+                return false
+            } else {
+                ignore_index = i as i16;
+
+                if i == 0 {
+                    is_increasing = arr[2] as i16 - arr[1] as i16 > 0;
+                } else if i == arr.len() - 2 {
+                    return true;
+                }
+                i = 0;
+
+                continue;
+            }
+
+        }
+
+        i += 1
     }
+
     return true;
 }
+
