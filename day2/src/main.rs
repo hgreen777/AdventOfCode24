@@ -1,6 +1,7 @@
 // Day 2 -> Advent of Code 2024.
 
 // Program [part one] Returns: 356
+// Program [part two] Return: 413
 
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
