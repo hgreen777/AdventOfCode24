@@ -4,14 +4,16 @@
 
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
+use std::time::Instant;
 
 const FILE: &str = r"E:\Programming\AdventOfCode24\day2\src\input.txt";
 
 fn main() {
-
+    let start = Instant::now();
     let mut total : u32 = 0;
     println!("{:?}",load_data(FILE,&mut total));
     println!("{}",total);
+    eprintln!("{:.2?}", start.elapsed());
 }
 
 fn load_data(file_location: &str, total_safe : &mut u32) -> io::Result<()> {
@@ -53,11 +55,6 @@ fn load_data(file_location: &str, total_safe : &mut u32) -> io::Result<()> {
 }
 
 fn is_safe(arr: &[u32]) -> bool {
-    // NO IMPLEMENTATION WORKS 
-    // Should show 413 as correct.
-    // Actual outptu shows 412 to be correct.
-    // THERE ARE NO SYNTAX ERRORS.
-
     let mut is_increasing: bool = arr[1] as i16 - arr[0] as i16 > 0;
     let mut ignore_index : i16 = -1;
     let mut i : usize = 0;
@@ -88,9 +85,7 @@ fn is_safe(arr: &[u32]) -> bool {
 
                 if i == 0 {
                     is_increasing = arr[2] as i16 - arr[1] as i16 > 0;
-                } else if i == arr.len() - 2 {
-                    return true;
-                }
+                } 
                 i = 0;
 
                 continue;
