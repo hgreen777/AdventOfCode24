@@ -1,0 +1,9 @@
+
+1. Read character bby character.
+2. check if character is m.
+    2a. If not move on.
+    2b. if it is, check subsequent characters mul(x,y)
+
+2x. for x & y, 1<= x,y <= y . x postpended by a comma, y postpended by )
+
+Used regex, soo much easier.
