@@ -1,3 +1,7 @@
+from datetime import datetime
+
+start_time = datetime.now()
+
 class Node:
     def __init__(self, data):
         self.data = data
@@ -26,7 +30,6 @@ page_orders = []
 count = 0 
 readingRules = True
 with open('input.txt', 'r') as file:
-
     for line in file:
         count += 1
 
@@ -42,16 +45,24 @@ with open('input.txt', 'r') as file:
         else:
             page_orders.append([int(x) for x in line.strip().split(',')])
 
+
+
 # Search each page in table O(1) (then O(n) with closed addressing))
 middle_total = 0
 for page_order in page_orders:
     valid = True
     for index,page in enumerate(page_order):
+        if valid == False:
+            break
+
+        # Check if a rule exists for that page.
         if rules[page].head == None:
             continue
         else:
             node = rules[page].head
-            while node is not None:
+
+            # Traverse linked list checking if each rule is obeyed
+            while node is not None and valid != False:
                 # Search for node[1] in the is page_order before the current node -> if it appears it is incorrect
                 for i in range(index):
                     if node.data[1] == page_order[i]:
@@ -62,7 +73,10 @@ for page_order in page_orders:
 
     # Pull the middle value and add
     if valid:
-        middle_index = len(page_order) // 2
-        middle_total += page_order[middle_index]
+        middle_total += page_order[len(page_order) // 2]
 
-print(middle_total)
+print(f"Part 1 Total: {middle_total}")
+
+end_time = datetime.now()
+execution_time = (end_time - start_time).total_seconds()
+print(f"Execution time: {execution_time} seconds")
