@@ -1,6 +1,10 @@
+# Day 5
+# Part 1 : 5713
+# Part 2 : 5180
+# Removed optimisations for part 2 as all elements need to be checked.
 from datetime import datetime
-
 start_time = datetime.now()
+
 
 class Node:
     def __init__(self, data):
@@ -22,9 +26,9 @@ class RulesList:
         last_node.next = new_node
         return new_node
 
-
 rules = [RulesList() for i in range(100)]
 page_orders = []
+
 
 # Read all rules (into hash table) & Page numbers from input
 count = 0 
@@ -52,9 +56,6 @@ middle_total = 0
 for page_order in page_orders:
     valid = True
     for index,page in enumerate(page_order):
-        if valid == False:
-            break
-
         # Check if a rule exists for that page.
         if rules[page].head == None:
             continue
@@ -62,20 +63,33 @@ for page_order in page_orders:
             node = rules[page].head
 
             # Traverse linked list checking if each rule is obeyed
-            while node is not None and valid != False:
+            while node is not None:
+
                 # Search for node[1] in the is page_order before the current node -> if it appears it is incorrect
                 for i in range(index):
                     if node.data[1] == page_order[i]:
-                        # Incorrect, break
+                        # Incorrect, Part 1: break
                         valid = False
+                        
+                        # Part 2: Fix the pages -> cannot simply swap them [ <5508]
+                        # Bubble it forward <- abstract -> insert second page before first.
+
+                        # i = second page
+                        # index = first page 
+                        # Currently i < index
+                        page_order.insert(i, page_order[index])
+                        del page_order[index+1]
+                        index = i
                         break
+
                 node = node.next
 
-    # Pull the middle value and add
-    if valid:
+
+    # Pull the middle value and add [Part 2 changed to not]
+    if not valid:
         middle_total += page_order[len(page_order) // 2]
 
-print(f"Part 1 Total: {middle_total}")
+print(f"Part 2 Total: {middle_total}")
 
 end_time = datetime.now()
 execution_time = (end_time - start_time).total_seconds()
