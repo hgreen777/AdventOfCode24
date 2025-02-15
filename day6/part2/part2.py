@@ -1,4 +1,4 @@
-#Day 6 part 2
+#Day 6 part 2:1309
 # 44 seconds for execution 
 import copy
 from datetime import datetime
@@ -108,7 +108,7 @@ def main():
         except Exception as e:
             print(f"{e}, {obstruction}")
 
-    print(f"Part 2: {loops}/{len(potential_obstructions) + 1} <- Should be 6")
+    print(f"Part 2: {loops}/{len(potential_obstructions) + 1}")
 
 main()
 
