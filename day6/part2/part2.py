@@ -1,5 +1,11 @@
 #Day 6 part 2
+# 44 seconds for execution 
 import copy
+from datetime import datetime
+start_time = datetime.now()
+
+file_name = 'input.txt'
+
 moves = [
     ['^',[-1,0]],
     ['>',[0,1]],
@@ -11,7 +17,7 @@ def readBoard():
 
     board = []
     
-    with open('testInput.txt','r') as file:
+    with open(file_name,'r') as file:
         for line in file:
             board.append([char for char in line.strip()])
 
@@ -67,14 +73,6 @@ def checkLoop(updated_board, start_position):
                 y += moves[selector][1][0]
                 x += moves[selector][1][1]
                 if updated_board[y][x] == moves[selector][0]:
-                    with open('output.txt', 'a') as file:
-                        for lines in updated_board:
-                            line_str = ""
-                            for x in lines:
-                                line_str += str(x)
-                            line_str += '\n'
-                            file.write(line_str)
-                        file.write('\n')
                     return True
             elif updated_board[y][x] == '.':
 
@@ -97,15 +95,6 @@ def main():
     loops = 0
     start_position = findStartPosition(board)
 
-    with open('output.txt', 'w') as file:
-        for lines in board:
-            line_str = ""
-            for x in lines:
-                line_str += str(x)
-            line_str += '\n'
-            file.write(line_str)
-        file.write('\n')
-
     board_copy = copy.deepcopy(board)
     potential_obstructions = mapAroute(board_copy, start_position)
 
@@ -122,3 +111,7 @@ def main():
     print(f"Part 2: {loops}/{len(potential_obstructions) + 1} <- Should be 6")
 
 main()
+
+end_time = datetime.now()
+execution_time = (end_time - start_time).total_seconds()
+print(f"Execution time: {execution_time} seconds")
