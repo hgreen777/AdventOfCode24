@@ -30,6 +30,13 @@ def findStartPosition(board):
             if board[i][j] == '^':
                 return [i,j]
 
+def replace_start_position(board):
+    start_position = findStartPosition(board)
+
+    board[start_position[0]][start_position[1]] = 'X'
+
+    return board
+
 def mapAroute(board, start_position):
     route_coordinates = []
     selector = 0
@@ -91,7 +98,6 @@ def checkLoop(updated_board, start_position):
 
 def main():
     board = readBoard()
-    print(len(board),len(board[0]))
     loops = 0
     start_position = findStartPosition(board)
 
@@ -101,7 +107,7 @@ def main():
 
     for obstruction in potential_obstructions:
         try:
-            new_board = copy.deepcopy(board)
+            new_board = readBoard()
             new_board[obstruction[0]][obstruction[1]] = '#'
             if checkLoop(new_board, start_position):
                 loops += 1
