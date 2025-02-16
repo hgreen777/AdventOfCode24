@@ -1,5 +1,5 @@
 # Day 7
-# Part 1 : 1399219271639
+# Part 1 : 1399219271639 -> use recursion to make more efficient.
 from datetime import datetime
 start_time = datetime.now()
 
@@ -60,7 +60,7 @@ def equation_possible(equation):
                 current_result = int(str(current_result) + argument)
 
             else:
-                print(bin_num[index - 1])
+                print("Error")
 
             if current_result > equation['result']:
                 break
