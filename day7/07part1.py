@@ -5,8 +5,6 @@ start_time = datetime.now()
 
 FILE = 'input.txt'
 
-operators = ['+','*']
-
 # Solution brute force with O(n * 2^x) n = input size, x =argument size (technically (O(2n* __) due to file read.))
 
 # Start by a brute force attempt 
