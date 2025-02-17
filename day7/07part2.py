@@ -41,8 +41,7 @@ def convert_to_base_3(n):
 def equation_possible(equation):
     iterations = len(equation['arguments']) - 1
     for i in range(3 ** iterations):
-        
-        #bin_num = format(i,f'0{iterations}b')
+
         num = format(convert_to_base_3(i),f'0{iterations}')[::-1]
         current_result = int(equation['arguments'][0])
 
