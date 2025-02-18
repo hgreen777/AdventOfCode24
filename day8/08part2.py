@@ -20,7 +20,7 @@ def readfile():
                 if char != '.':
                     nodes[ord(char)].append([index,line_count])
             
-            line_count += 1 # Square input <- was out by onne in old position (idk how part one passed)
+            line_count += 1 # Square input <- was out by one in old position (idk how part one passed)
 
     return nodes
 
@@ -44,8 +44,6 @@ def find_total_antinodes(nodes,size):
                         dx = node_set[j][0] - node_set[i][0]
                         dy = node_set[j][1] - node_set[i][1]
 
-                        #antinode_1 = [node_set[i][0] - dx, node_set[i][1] - dy]
-                        #antinode_2 = [node_set[j][0] + dx, node_set[j][1] + dy]
                         antinode_1 = [node_set[i][0], node_set[i][1]]
                         antinode_2 = [node_set[j][0], node_set[j][1]]
 
