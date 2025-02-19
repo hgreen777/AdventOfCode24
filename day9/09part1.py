@@ -18,13 +18,8 @@ def readfile():
 
 def moveFiles(disk):
     # Assumes non-empty input
-    # TODO : move the files until there are no free gaps between the files
     #O(n)
-    # Have pointer at start and end move these closer, collapsing the gap until first ends up after the last/no files ledt
-    # Once file at end has been moved, add a fullstop after it meaning that the even spot is free space.
 
-    # TODO : Calculate how many files there are (number of odd spots in the array)
-    # 10:= 0[file] 1[space], 2[f] 3[s] 4[f] 5[s] 6[f] 7[s] 8[f] 9[s]
     next_file_index = 0
     current_file_id = 0
     l = len(disk)
@@ -39,7 +34,6 @@ def moveFiles(disk):
     print(files)
     last_file_id = int(files) - 1
 
-    # 
     for i in range(l):
         if i == next_file_index:
             disk[i] = f"{current_file_id}:{disk[i]}"
@@ -47,47 +41,31 @@ def moveFiles(disk):
             next_file_index += 2
         else:
             # Empty space 
-            # Move the last file into all the current space (if left over edit the last location with a new space sizing ) 
+            # Move the last file into all the current space 
             available_space = int(disk[i])
-            
-            required_space = int(disk[last_file_index])
+            disk[i] = ''
 
-            if available_space < required_space:
-                disk[i] = f"{last_file_id}:{disk[i]}"
-                # Do not update the last_file_id/last_file_index
-                # Update the required space
-                disk[last_file_index] = str(required_space - available_space)
-            elif available_space > required_space:
-                # Firstly, add that file in the gap
-                disk[i] = f"{last_file_id}:{required_space}"
-                available_space -= required_space
-                last_file_id -= 1
-                last_file_index -= 2
-                # Keep moving on adding files into the gap until either the break is reached or available space is gone.
-                while (current_file_id <= last_file_id and available_space > 0):
-                    required_space = int(disk[last_file_index])
-                    if required_space == available_space:
-                        disk[i] += f",{last_file_id}:{available_space}"
-                        last_file_id -= 1
-                        last_file_index -= 2
-                        break
-                    elif required_space > available_space:
-                        disk[i] += f",{last_file_id}:{available_space}"
-                        disk[last_file_index] = str(required_space - available_space)
-                        break
-                    elif required_space < available_space:
-                        disk[i] += f",{last_file_id}:{required_space}"
-                        available_space -= required_space
-                        last_file_id -= 1
-                        last_file_index -= 2
+            # Keep moving on adding files into the gap until either the break is reached or available space is gone.
+            while (current_file_id <= last_file_id and available_space > 0):
+                required_space = int(disk[last_file_index])
 
-            else:
-                # They the same
-                disk[i] = f"{last_file_id}:{disk[i]}"
-                # Move onto next file
-                last_file_id -= 1
-                last_file_index -= 2
-
+                if available_space < required_space:
+                    disk[i] += f"{last_file_id}:{available_space}"
+                    # Update last file to reflect spacing
+                    disk[last_file_index] = str(required_space - available_space)
+                    break
+                elif available_space > required_space:
+                    # Firstly, add that file in the gap
+                    disk[i] += f"{last_file_id}:{required_space},"
+                    available_space -= required_space
+                    last_file_id -= 1
+                    last_file_index -= 2
+                
+                else: # available_space == required_space
+                    disk[i] += f"{last_file_id}:{available_space}"
+                    last_file_id -= 1
+                    last_file_index -= 2
+                    break
         
         if current_file_id > last_file_id:
             # Insert break character
@@ -108,10 +86,11 @@ def checksum(input):
         
         partition = input[i].split(',') # Split on comma where more then one file is kept in the same partition.
         for part in partition:
-            page = part.split(':') # Split id and space_required
-            for i in range(int(page[1])):
-                total += current_index * int(page[0])
-                current_index += 1
+            if part != '':
+                page = part.split(':') # Split id and space_required
+                for i in range(int(page[1])):
+                    total += current_index * int(page[0])
+                    current_index += 1
 
     return total
 
@@ -121,10 +100,7 @@ def main():
     part_1_total = checksum(updated_disk)
     print(f"Part 1 total: {part_1_total}")
 
-
 main()
-
-
 
 
 end_time = datetime.now()
