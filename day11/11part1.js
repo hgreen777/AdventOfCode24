@@ -41,16 +41,16 @@ function calculateTotalStone(array, blinks) {
     return total;
 }
 
-function part1() {
+function part1_11() {
 try{
 const start = performance.now();
 
-document.getElementById("part1").innerHTML = `Part 1: ${calculateTotalStone(real_arr,25)}`
+document.getElementById("11part1").innerHTML = `Part 1: ${calculateTotalStone(real_arr,25)}`
 
 const end = performance.now();
 console.log(`Execution Time: ${(end - start) / 1000} seconds`);
 
 } catch (error) {
-    document.getElementById("part1").innerHTML = error;
+    document.getElementById("11part1").innerHTML = error;
 }
 }

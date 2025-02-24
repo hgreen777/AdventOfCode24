@@ -1,6 +1,5 @@
 // Day 11
-// Part 2 : > 6900581362
-// Test array should be 
+// Part 2 : 238317474993392 
 
 let cache = new Map();
 
@@ -39,15 +38,15 @@ function p2calculateTotalStone(array, blinks) {
     return total;
 }
 
-function part2() {
+function part2_11() {
     try {
         const start = performance.now();
         console.log("Started processing part 2.");
-        document.getElementById("part2").innerHTML = `Part 2: ${p2calculateTotalStone(real_arr, 75)}`;
+        document.getElementById("11part2").innerHTML = `Part 2: ${p2calculateTotalStone(real_arr, 75)}`;
         console.log(cache);
         const end = performance.now();
         console.log(`Execution Time: ${(end - start) / 1000} seconds`);
     } catch (error) {
-        document.getElementById("part2").innerHTML = error;
+        document.getElementById("11part2").innerHTML = error;
     }
 }
