@@ -52,8 +52,10 @@ def analyseRegion(current_region_letter, y,x, perimeter_area): # perimeter_area 
         next_character = garden_map[ny][nx]
 
         if current_region_letter.lower() == next_character:
+            # No border, another region.
             continue
         elif current_region_letter.upper() == next_character:
+            # No border, another letter in region.
             perimeter_area = analyseRegion(next_character, ny, nx, perimeter_area)
         elif current_region_letter.upper() != next_character.upper():
             # Differentiate the perimeter types
@@ -66,47 +68,54 @@ def analyseRegion(current_region_letter, y,x, perimeter_area): # perimeter_area 
             elif dir_index == 3:
                 perimeter_area[0].add((y,x,'LEFT'))
 
-        return perimeter_area
+    return perimeter_area
 
 
 
 def calculateSides(region_perimeter):
     total_region_sides = 0
     region_perimeter = list(region_perimeter)
+    #region_perimeter = sorted(region_perimeter, key=lambda x: (x[1], x[0]))
 
-    while (len(region_perimeter) > 0):
+    horizontal_perimeter = sorted([x for x in region_perimeter if (x[2] == "UP" or x[2] == "BOTTOM")], key=lambda x: (x[2],x[1]))
+    vertical_perimeter = sorted([y for y in region_perimeter if y[2] == "LEFT" or y[2] == "RIGHT"], key=lambda x: (x[2],x[0]))
 
-        current_y = region_perimeter[0][0]
-        current_x = region_perimeter[0][1]
-        next_y = current_y
-        next_x = current_x
-        
-        type = region_perimeter[0][2]
+    while (len(horizontal_perimeter) > 0):
+        cy = horizontal_perimeter[0][0]
+        cx = horizontal_perimeter[0][1]
+        ny = cy
+        nx = cx
+        type = horizontal_perimeter[0][2]
+        horizontal_perimeter.remove(horizontal_perimeter[0])
+        nx += 1
+        while (nx < max_width):
+            if (ny,nx,type) in horizontal_perimeter:
+                horizontal_perimeter.remove((ny,nx,type))
+                nx += 1
+                continue
+            else:
+                total_region_sides += 1
+                break
 
-        region_perimeter.remove(region_perimeter[0])
+    while (len(vertical_perimeter) > 0):
+        cy = vertical_perimeter[0][0]
+        cx = vertical_perimeter[0][1]
+        ny = cy
+        nx = cx
+        type = vertical_perimeter[0][2]
+        vertical_perimeter.remove(vertical_perimeter[0])
+        ny += 1
+        while (ny < max_length):
+            if (ny,nx,type) in vertical_perimeter:
+                vertical_perimeter.remove((ny,nx,type))
+                ny += 1
+                continue
+            else:
+                total_region_sides += 1
+                break
+    
 
-        if type == "TOP" or type == "BOTTOM":
-            next_x += 1
-            while (next_x < max_width):
-                if (next_y, next_x, type) in region_perimeter:
-                    region_perimeter.remove((next_y, next_x, type))
-                    next_x += 1
-                    continue
-                else:
-                    # Break
-                    total_region_sides += 1
-                    break
-        else:
-            next_y += 1
-            while (next_y < max_length):
-                if (next_y,next_x,type) in region_perimeter:
-                    region_perimeter.remove(tuple([next_y,next_x,type]))
-                    next_y += 1
-                    continue
-                else:
-                    # Break
-                    total_region_sides += 1
-                    break
+        # Need to organise and get the next smallest 
 
     print(total_region_sides)
     return total_region_sides
@@ -118,9 +127,10 @@ def analyseMap(map):
     for y,line in enumerate(map):
         for x,char in enumerate(line):
             if char != char.lower(): # is char is not lowercase
-                perimeter_area = analyseRegion(char,y,x,[set(),0])
-                sides = calculateSides(perimeter_area[0])
-                dimensions.append([sides,perimeter_area[1]])
+                if y==0 and x==0:
+                    perimeter_area = analyseRegion(char,y,x,[set(),0])
+                    sides = calculateSides(perimeter_area[0])
+                    dimensions.append([sides,perimeter_area[1]])
 
     return dimensions
 
