@@ -79,6 +79,7 @@ def calculateSides(region_perimeter):
 
     horizontal_perimeter = sorted([x for x in region_perimeter if (x[2] == "UP" or x[2] == "BOTTOM")], key=lambda x: (x[2],x[1]))
     vertical_perimeter = sorted([y for y in region_perimeter if y[2] == "LEFT" or y[2] == "RIGHT"], key=lambda x: (x[2],x[0]))
+    #print(horizontal_perimeter,vertical_perimeter)
 
     while (len(horizontal_perimeter) > 0):
         cy = horizontal_perimeter[0][0]
@@ -88,7 +89,7 @@ def calculateSides(region_perimeter):
         type = horizontal_perimeter[0][2]
         horizontal_perimeter.remove(horizontal_perimeter[0])
         nx += 1
-        while (nx < max_width):
+        while (nx <= max_width):
             if (ny,nx,type) in horizontal_perimeter:
                 horizontal_perimeter.remove((ny,nx,type))
                 nx += 1
@@ -105,7 +106,7 @@ def calculateSides(region_perimeter):
         type = vertical_perimeter[0][2]
         vertical_perimeter.remove(vertical_perimeter[0])
         ny += 1
-        while (ny < max_length):
+        while (ny <= max_length):
             if (ny,nx,type) in vertical_perimeter:
                 vertical_perimeter.remove((ny,nx,type))
                 ny += 1
@@ -117,20 +118,22 @@ def calculateSides(region_perimeter):
 
         # Need to organise and get the next smallest 
 
-    print(total_region_sides)
     return total_region_sides
 
 
 def analyseMap(map):
     dimensions = []
 
+    region_count = 0
     for y,line in enumerate(map):
         for x,char in enumerate(line):
             if char != char.lower(): # is char is not lowercase
-                if y==0 and x==0:
-                    perimeter_area = analyseRegion(char,y,x,[set(),0])
-                    sides = calculateSides(perimeter_area[0])
-                    dimensions.append([sides,perimeter_area[1]])
+                #if char == '':
+                perimeter_area = analyseRegion(char,y,x,[set(),0])
+                sides = calculateSides(perimeter_area[0])
+                dimensions.append([sides,perimeter_area[1]])
+                print(f"{char}:{sides}")
+                region_count += 1
 
     return dimensions
 
