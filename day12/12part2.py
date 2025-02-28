@@ -4,7 +4,7 @@
 from datetime import datetime
 start_time = datetime.now()
 
-FILE = f"test_input.txt"
+FILE = f"input.txt"
 
 def readFile(file):
     map = []
@@ -58,7 +58,7 @@ def analyseRegion(current_region_letter, y,x, perimeter_area): # perimeter_area 
             # No border, another letter in region.
             perimeter_area = analyseRegion(next_character, ny, nx, perimeter_area)
         elif current_region_letter.upper() != next_character.upper():
-            # Differentiate the perimeter types
+            # Differentiate the region_perimeter types
             if dir_index == 0: # UP
                 perimeter_area[0].add((y,x,'UP'))
             elif dir_index == 1:
@@ -74,46 +74,32 @@ def analyseRegion(current_region_letter, y,x, perimeter_area): # perimeter_area 
 
 def calculateSides(region_perimeter):
     total_region_sides = 0
-    region_perimeter = list(region_perimeter)
-    #region_perimeter = sorted(region_perimeter, key=lambda x: (x[1], x[0]))
+    region_perimeter = sorted(list(region_perimeter), key=lambda x: (x[2], x[0], x[1]))
 
-    horizontal_perimeter = sorted([x for x in region_perimeter if (x[2] == "UP" or x[2] == "BOTTOM")], key=lambda x: (x[2],x[1]))
-    vertical_perimeter = sorted([y for y in region_perimeter if y[2] == "LEFT" or y[2] == "RIGHT"], key=lambda x: (x[2],x[0]))
-    #print(horizontal_perimeter,vertical_perimeter)
+    # Divide and conquer to make if n/2 for n =len(region_perimeter)
 
-    while (len(horizontal_perimeter) > 0):
-        cy = horizontal_perimeter[0][0]
-        cx = horizontal_perimeter[0][1]
-        ny = cy
-        nx = cx
-        type = horizontal_perimeter[0][2]
-        horizontal_perimeter.remove(horizontal_perimeter[0])
-        nx += 1
-        while (nx <= max_width):
-            if (ny,nx,type) in horizontal_perimeter:
-                horizontal_perimeter.remove((ny,nx,type))
-                nx += 1
-                continue
-            else:
-                total_region_sides += 1
-                break
-
-    while (len(vertical_perimeter) > 0):
-        cy = vertical_perimeter[0][0]
-        cx = vertical_perimeter[0][1]
-        ny = cy
-        nx = cx
-        type = vertical_perimeter[0][2]
-        vertical_perimeter.remove(vertical_perimeter[0])
-        ny += 1
-        while (ny <= max_length):
-            if (ny,nx,type) in vertical_perimeter:
-                vertical_perimeter.remove((ny,nx,type))
-                ny += 1
-                continue
-            else:
-                total_region_sides += 1
-                break
+    while len(region_perimeter) > 0:
+        cy, cx, type = region_perimeter[0]
+        region_perimeter.remove(region_perimeter[0])
+        
+        if type in ['UP', 'BOTTOM']:
+            nx = cx + 1
+            while nx <= max_width:
+                if (cy, nx, type) in region_perimeter:
+                    region_perimeter.remove((cy, nx, type))
+                    nx += 1
+                else:
+                    total_region_sides += 1
+                    break
+        elif type in ['LEFT', 'RIGHT']:
+            ny = cy + 1
+            while ny <= max_length:
+                if (ny, cx, type) in region_perimeter:
+                    region_perimeter.remove((ny, cx, type))
+                    ny += 1
+                else:
+                    total_region_sides += 1
+                    break
     
 
         # Need to organise and get the next smallest 
@@ -124,16 +110,12 @@ def calculateSides(region_perimeter):
 def analyseMap(map):
     dimensions = []
 
-    region_count = 0
     for y,line in enumerate(map):
         for x,char in enumerate(line):
-            if char != char.lower(): # is char is not lowercase
-                #if char == '':
+            if char != char.lower(): # is char is not lowercase (ie not visited)
                 perimeter_area = analyseRegion(char,y,x,[set(),0])
                 sides = calculateSides(perimeter_area[0])
                 dimensions.append([sides,perimeter_area[1]])
-                print(f"{char}:{sides}")
-                region_count += 1
 
     return dimensions
 
