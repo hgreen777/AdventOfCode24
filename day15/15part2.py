@@ -1,13 +1,12 @@
 # Day 15
-# Part 1 : 1526018
-# O(n * m) where n is moves, and m is length of board -> O(n) as m is constant
-# Every move will have a max recursion depth of width/length of board as that is the max it would check before guaranteeing hitting a '#'
-
+# Part 2 : 
+# O(n)
+# Cannot change read file to map onto signle blocks due to pushing move. However read will have to be changed
 from datetime import datetime
 from re import findall
 start_time = datetime.now()
 
-FILE = f"input.txt"
+FILE = f"test2_input.txt"
 
 def readFile(file):
     board = []
@@ -20,8 +19,26 @@ def readFile(file):
         current_line = f.readline()
         while current_line != "":
             if len(findall(r"(#){5,}",current_line)) == 0:
-                board.append(list(current_line[1:len(current_line) - 2]))
-            
+                row = list(current_line[1:len(current_line) - 2])
+
+                new_row = row.copy()
+                i = 0
+                while i < len(new_row):
+                    element = new_row[i]
+                    if element == '#':
+                        new_row.insert(i,'#')
+                    elif element == '.':
+                        new_row.insert(i,'.')
+                    elif element == 'O':
+                        new_row[i] = ']'
+                        new_row.insert(i,'[')
+                    elif element == '@':
+                        new_row.insert(i+1,'.')
+                    i += 2
+
+
+
+                board.append(new_row)
                 current_line = f.readline()
             else:
                 break
@@ -63,7 +80,6 @@ def processMoves(moves):
         if checkNextPosition('@',ny, nx, selected_direction):
             # Update current_pos
             warehouse_layout[current_pos[0]][current_pos[1]] = '.'
-            #warehouse_layout[ny][nx] = '@'
             current_pos[0] += selected_direction[0]
             current_pos[1] += selected_direction[1]
 
@@ -78,7 +94,14 @@ def checkNextPosition(current_char, y, x, current_direction):
         return False
     elif warehouse_layout[y][x] == '#':
         return False
-    elif warehouse_layout[y][x] == 'O':
+    
+    # Update this  different for vertical 
+    elif warehouse_layout[y][x] == '[' or warehouse_layout[y][x] == ']':
+        if current_direction == [1,0] or current_direction == [-1,0]:
+            # recurse going vertically with each, both need to return true to move 
+            if checkNextPosition('', ny,nx, current_direction) and checkNextPosition('',ny,nx, current_direction)
+        else:
+            # Skip it in some way ensuring it would still move
         # Calculate next position
         ny = y + current_direction[0]
         nx = x + current_direction[1]
@@ -87,6 +110,7 @@ def checkNextPosition(current_char, y, x, current_direction):
             warehouse_layout[y][x] = current_char
             return True
     elif warehouse_layout[y][x] == '.':
+        #  Becareful, 
         warehouse_layout[y][x] = current_char
         return True
 
@@ -98,13 +122,16 @@ def calculateGPS():
     for y,row in enumerate(warehouse_layout):
         for x,element in enumerate(row):
             if element == 'O':
-                total += (100 * (y + 1)) + (x + 1)
+                total += (100 * (y + 2)) + (x + 1)
 
     return total
 
 def main():
     global warehouse_layout, bounds
     warehouse_layout, moves = readFile(FILE)
+    for row in warehouse_layout:
+        print(''.join(row))
+        print()
     bounds = [len(warehouse_layout), len(warehouse_layout[0])]
     processMoves(moves)
     #print(warehouse_layout)
