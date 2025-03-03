@@ -1,12 +1,12 @@
 # Day 15
-# Part 2 : 
+# Part 2 : 1547508 < x > 1552537 > 1571055, x = 1550677.0
 # O(n)
 # Cannot change read file to map onto signle blocks due to pushing move. However read will have to be changed
 from datetime import datetime
 from re import findall
 start_time = datetime.now()
 
-FILE = f"test2_input.txt"
+FILE = f"input.txt"
 
 def readFile(file):
     board = []
@@ -53,7 +53,7 @@ def readFile(file):
                 line_list.remove('\n')
             moves += line_list
             current_line = f.readline()
-
+    #print(moves)
     return board,moves
 
 def findStartPos():
@@ -72,48 +72,100 @@ directions = {
 
 def processMoves(moves):
     current_pos = findStartPos()
+    global blocks_to_move
 
-    for move in moves:
+    for i,move in enumerate(moves):
         selected_direction = directions[move]
         ny = current_pos[0] + selected_direction[0]
         nx = current_pos[1] + selected_direction[1]
-        if checkNextPosition('@',ny, nx, selected_direction):
-            # Update current_pos
-            warehouse_layout[current_pos[0]][current_pos[1]] = '.'
-            current_pos[0] += selected_direction[0]
-            current_pos[1] += selected_direction[1]
+        if ny < 0 or nx < 0 or ny >= bounds[0] or nx >=bounds[1]:
+            continue
+        blocks_to_move = []
+        try:
+            if checkNextPosition(ny, nx, selected_direction):
+                # Update current_pos
+                warehouse_layout[current_pos[0]][current_pos[1]] = '.'
+                current_pos[0] += selected_direction[0]
+                current_pos[1] += selected_direction[1]
+                warehouse_layout[current_pos[0]][current_pos[1]] = '@'
+                # move all the tiles in list
+                moveTiles(selected_direction)
+        except Exception as e:
+            for i,row in enumerate(warehouse_layout):
+                print(''.join(row))
+            print()
+            print(i)
+            print(move)
+            print(ny,nx)
+            #return
 
 
+        #if move == '^':
+        #print(move)
+        #print(blocks_to_move)
         #for row in warehouse_layout:
         #    print(''.join(row))
         #print()
 
-def checkNextPosition(current_char, y, x, current_direction):
+def checkNextPosition(y, x, current_direction):
+    """
+    Checks the next position. 
+    If it is a valid position will move the item before into that slot. 
+    This will then travel back up the recursion stack to fill in all the spots before it. 
+    The function should only update the next position (as that is what it is checking). 
+    Then subsequently that position will be updated in the previous call.
+    ie it should only update the y,x it is given, not any new calculated positions to be checked in the next function. That should be handled by the next call.
+
+    Returns false if nothing should be moved.
+    Returns true to go through the recursive function stack moving each of the blocks in there that need to be moved.
+    """
+    """
+    Have a list of things to move, then go through the list and move the coordinations original becomes '.'
+    new coordinates (original + direction) becomes that blocks.
+    """
+
     # check bounds 
     if y < 0 or x < 0 or y >= bounds[0] or x >=bounds[1]:
         return False
     elif warehouse_layout[y][x] == '#':
         return False
-    
-    # Update this  different for vertical 
-    elif warehouse_layout[y][x] == '[' or warehouse_layout[y][x] == ']':
-        if current_direction == [1,0] or current_direction == [-1,0]:
-            # recurse going vertically with each, both need to return true to move 
-            if checkNextPosition('', ny,nx, current_direction) and checkNextPosition('',ny,nx, current_direction)
-        else:
-            # Skip it in some way ensuring it would still move
-        # Calculate next position
-        ny = y + current_direction[0]
-        nx = x + current_direction[1]
-        if checkNextPosition('O',ny,nx, current_direction):
-            warehouse_layout[ny][nx] = 'O'
-            warehouse_layout[y][x] = current_char
-            return True
     elif warehouse_layout[y][x] == '.':
-        #  Becareful, 
-        warehouse_layout[y][x] = current_char
         return True
+    
+    elif warehouse_layout[y][x] == '[': 
+        if current_direction[1] != 0: # Horizontal
+            # Has to be right
+            blocks_to_move.append([y,x])
+            if checkNextPosition(y,x + current_direction[1], current_direction):
+                return True
+        elif current_direction[0] != 0: # Vertical
+            blocks_to_move.append([y,x])
+            if checkNextPosition(y+current_direction[0],x, current_direction) and checkNextPosition(y+current_direction[0],x+1, current_direction):
+                return True
+    elif warehouse_layout[y][x] == ']':
+        if current_direction[1] != 0: # Horizontal
+            blocks_to_move.append([y,x - 1])
+            if checkNextPosition(y,x +current_direction[1] , current_direction):
+                return True
+        elif current_direction[0] != 0: # Vertical
+            blocks_to_move.append([y,x-1])
+            if checkNextPosition(y+current_direction[0],x, current_direction) and checkNextPosition(y+current_direction[0],x-1, current_direction):
+                return True
+        
+    return False
 
+
+def moveTiles(current_direction):
+
+    blocks_to_move.reverse()
+    for block in blocks_to_move:
+        # [y,x]
+
+        warehouse_layout[block[0]][block[1]] = '.'
+        warehouse_layout[block[0]][block[1]+1] = '.'
+
+        warehouse_layout[block[0] + current_direction[0]][block[1] + current_direction[1]] = '['
+        warehouse_layout[block[0] + current_direction[0]][block[1] + current_direction[1] + 1] = ']'
 
 
 def calculateGPS():
@@ -121,26 +173,24 @@ def calculateGPS():
 
     for y,row in enumerate(warehouse_layout):
         for x,element in enumerate(row):
-            if element == 'O':
-                total += (100 * (y + 2)) + (x + 1)
+            if element == '[' and warehouse_layout[y][x+1] == ']':
+                total += (100 * (y + 1)) + (x + 2)
 
     return total
 
 def main():
     global warehouse_layout, bounds
     warehouse_layout, moves = readFile(FILE)
+    bounds = [len(warehouse_layout), len(warehouse_layout[0])]
     for row in warehouse_layout:
         print(''.join(row))
-        print()
-    bounds = [len(warehouse_layout), len(warehouse_layout[0])]
+    print()
     processMoves(moves)
-    #print(warehouse_layout)
+    for row in warehouse_layout:
+        print(''.join(row))
+    print()
     part1_total = calculateGPS()
-    print(f"Part 1 total: {part1_total}")
-
-
-
-
+    print(f"Part 2 total: {part1_total}")
 
 main()
 
