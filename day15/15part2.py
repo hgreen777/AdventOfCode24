@@ -108,21 +108,6 @@ def processMoves(moves):
         #print()
 
 def checkNextPosition(y, x, current_direction):
-    """
-    Checks the next position. 
-    If it is a valid position will move the item before into that slot. 
-    This will then travel back up the recursion stack to fill in all the spots before it. 
-    The function should only update the next position (as that is what it is checking). 
-    Then subsequently that position will be updated in the previous call.
-    ie it should only update the y,x it is given, not any new calculated positions to be checked in the next function. That should be handled by the next call.
-
-    Returns false if nothing should be moved.
-    Returns true to go through the recursive function stack moving each of the blocks in there that need to be moved.
-    """
-    """
-    Have a list of things to move, then go through the list and move the coordinations original becomes '.'
-    new coordinates (original + direction) becomes that blocks.
-    """
 
     # check bounds 
     if y < 0 or x < 0 or y >= bounds[0] or x >=bounds[1]:
@@ -136,7 +121,7 @@ def checkNextPosition(y, x, current_direction):
         if current_direction[1] != 0: # Horizontal
             # Has to be right
             blocks_to_move.append([y,x])
-            if checkNextPosition(y,x + current_direction[1], current_direction):
+            if checkNextPosition(y,x + 2*current_direction[1], current_direction):
                 return True
         elif current_direction[0] != 0: # Vertical
             blocks_to_move.append([y,x])
@@ -145,7 +130,7 @@ def checkNextPosition(y, x, current_direction):
     elif warehouse_layout[y][x] == ']':
         if current_direction[1] != 0: # Horizontal
             blocks_to_move.append([y,x - 1])
-            if checkNextPosition(y,x +current_direction[1] , current_direction):
+            if checkNextPosition(y,x +2*current_direction[1] , current_direction):
                 return True
         elif current_direction[0] != 0: # Vertical
             blocks_to_move.append([y,x-1])
