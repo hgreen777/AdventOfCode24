@@ -1,5 +1,5 @@
 # Day 16
-# Part 1 : Clean code add an output, make it more efficient 
+# Part 1 : 135536
 from datetime import datetime
 import time
 from re import findall
@@ -42,30 +42,19 @@ def findAvailableSpaces(maze):
     return spaces
 
 def calculate_if_turn(space0,space1, space2): 
-    direction = None
     # Input: Space0 = Space before current one, Space1: current space, Space2 := next space, direction := current travel
     # Can be calculated either using "3 nodes to identify corneer"
     # or using direction
-    if direction and space1 and space2:
-        dy = space2[0] - space1[0]
-        dx = space2[1] - space1[1]
-        if direction != [dy,dx]:
-            return 1001
-        else:
-            return 1
-    elif space0 and space1 and space2:
-        # Get current direction
-        dy1 = space1[0] - space0[0]
-        dx1 = space1[1] - space0[1]
-        dy2 = space2[0] - space1[0]
-        dx2 = space2[1] - space1[1]
+    # Get current direction
+    dy1 = space1[0] - space0[0]
+    dx1 = space1[1] - space0[1]
+    dy2 = space2[0] - space1[0]
+    dx2 = space2[1] - space1[1]
 
-        if [dy1,dx1] != [dy2,dx2]:
-            return 1001
-        else:
-            return 1
-    else:   
-        raise Exception("Invalid Arguments")
+    if [dy1,dx1] != [dy2,dx2]:
+        return 1001
+    else:
+        return 1
 
 
 
@@ -92,18 +81,23 @@ def findFastestRoute(available_spaces, start_pos):
     destination = findDestination(maze)
     available_spaces.append(start_pos)
     available_spaces.append(destination)
-    dist = [sys.maxsize for _ in available_spaces]
-    prev = [None for _ in available_spaces]
-    explored = [False for _ in available_spaces]
+
+    dist = []
+    prev = []
+    explored = []
+    for _ in available_spaces:
+        dist.append(sys.maxsize)
+        prev.append(None)
+        explored.append(False)
+
 
     dist[available_spaces.index(start_pos)] = 0
 
     while explored[len(explored)-1] == False:
         v = leastUnexploredVertex(explored,dist) # Index of that vertex
         explored[v] = True
-        # Get the set of available spaced around it 
-        available_around = findAvailableAround(available_spaces,v) # -> indexes of the vertexes around it
 
+        available_around = findAvailableAround(available_spaces,v) # -> indexes of the vertexes around it
 
         for w in available_around:
             if prev[v] is not None:
@@ -131,8 +125,6 @@ def findFastestRoute(available_spaces, start_pos):
     else:
         dist[len(dist) - 1] += 1000
 
-    printIndexMoves(available_spaces,path,maze.copy())
-    print(dist[len(dist) - 1])
     return dist[len(dist) - 1]
 
 def findAvailableAround(available, v):
@@ -152,12 +144,6 @@ def calculateCost(available_spaces, v, w, prev=None, direction=None):
         if calculate_if_turn(available_spaces[prev], available_spaces[v], available_spaces[w], direction):
             return 1001
     return 1
-
-
-def calculateScore(moves):
-    # Calculate turns here.
-    for move in moves:
-        return 0 
 
 
 def printBoard(board):
@@ -184,12 +170,14 @@ def printMoves(moves,board):
 def main():
     global maze
     maze = readFile(FILE)
-    print("Starting Maze")
-    printBoard(maze)
+    #print("Starting Maze")
+    #printBoard(maze)
     #[y,x] = findStart(maze)
     #print(y,x)
     spaces = findAvailableSpaces(maze)
-    findFastestRoute(spaces, findStart(maze))
+    total = findFastestRoute(spaces, findStart(maze))
+
+    print(f"Part 1 total: {total}")
 
 if __name__ == "__main__":
     main()
